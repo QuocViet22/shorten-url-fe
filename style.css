@@ -1,0 +1,10 @@
+body {
+    width: 500px;
+    margin: 10%;
+}
+
+.shorten-container {
+    background: rgb(184, 219, 219);
+    padding: 20px;
+    border-radius: 10px;
+}

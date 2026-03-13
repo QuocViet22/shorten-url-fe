@@ -1,0 +1,30 @@
+name: SSH into VPS and deploy
+
+on:
+  push:
+    branches:
+      - quality
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    name: Deploy over SSH
+
+    steps:
+    - name: Deploy using ssh
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        key: ${{ secrets.PRIVATE_KEY }}
+        port: 22
+        script: |
+          cd ..
+          cd shorten-url-app/shorten-url-fe
+          git pull origin quality
+          git status
+          sudo nginx -t
+          sudo systemctl reload nginx
+          
+          
+          

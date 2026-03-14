@@ -9,6 +9,7 @@ function handleShorten() {
     // Clean the URL: add https:// if no protocol
     if (!longUrl.startsWith('http://') && !longUrl.startsWith('https://')) {
         alert('Please enter a valid URL.');
+        return;
     }
     else {
         const cache = JSON.parse(sessionStorage.getItem(STORAGE_KEY) || '[]');

@@ -10,38 +10,39 @@ function handleShorten() {
     if (!longUrl.startsWith('http://') && !longUrl.startsWith('https://')) {
         alert('Please enter a valid URL.');
     }
-
-    const cache = JSON.parse(sessionStorage.getItem(STORAGE_KEY) || '[]');
-    // 1. Check Cache 
-    const existing = cache.find(item => item.long === longUrl);
-    if (existing) {
-        showResult(existing.short);
-    } else {
-        // 2. Fetch API to shorten URL
-        fetch('https://ziplink.viethq.tech/api/url', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ longUrl })
-        })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
+    else {
+        const cache = JSON.parse(sessionStorage.getItem(STORAGE_KEY) || '[]');
+        // 1. Check Cache 
+        const existing = cache.find(item => item.long === longUrl);
+        if (existing) {
+            showResult(existing.short);
+        } else {
+            // 2. Fetch API to shorten URL
+            fetch('https://ziplink.viethq.tech/api/url', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ longUrl })
             })
-            .then(data => {
-                const shortUrl = data.shortUrl; // Assuming the API returns { shortUrl: "..." }
-                // 3. Save to Cache 
-                cache.unshift({ long: longUrl, short: shortUrl });
-                sessionStorage.setItem(STORAGE_KEY, JSON.stringify(cache));
-                showResult(shortUrl);
-                renderHistory();
-            })
-            .catch(error => {
-                alert('Error shortening URL: ' + error.message);
-            });
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    const shortUrl = data.shortUrl; // Assuming the API returns { shortUrl: "..." }
+                    // 3. Save to Cache 
+                    cache.unshift({ long: longUrl, short: shortUrl });
+                    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(cache));
+                    showResult(shortUrl);
+                    renderHistory();
+                })
+                .catch(error => {
+                    alert('Error shortening URL: ' + error.message);
+                });
+        }
     }
 }
 
@@ -52,20 +53,31 @@ function renderHistory() {
         listElement.innerHTML = '<p style="color: #475569; font-size: 0.8rem;">No recent links yet.</p>';
         return;
     }
-    listElement.innerHTML = cache.map(item =>
-        `<div class="history-item">
+    listElement.innerHTML = cache.map(item => {
+        const longDisplay = truncateUrlDisplay(item.long, 100);
+        const shortDisplay = truncateUrlDisplay(item.short, 40);
+        return `<div class="history-item">
         <div class="history-info">
-            <span class="long">${item.long}</span>
-            <span class="short">${item.short}</span>
+            <span class="long" title="${item.long}">${longDisplay}</span>
+            <span class="short" title="${item.short}">${shortDisplay}</span>
         </div>
         <button class="copy-small" onclick="copyToClipboard('${item.short}')">Copy</button>
-    </div>`).join('');
+    </div>`;
+    }).join('');
+}
+
+function truncateUrlDisplay(url, maxLength = 100) {
+    if (url.length <= maxLength) return url;
+    const prefix = url.slice(0, Math.max(8, maxLength - 8));
+    return `${prefix}....`;
 }
 
 function showResult(url) {
     document.getElementById('main-form').classList.add('hidden');
     document.getElementById('result-display').classList.remove('hidden');
-    document.getElementById('generated-link').innerText = url;
+    const display = truncateUrlDisplay(url, 40);
+    const linkEl = document.getElementById('generated-link');
+    linkEl.innerHTML = `<a href="${url}" target="_blank" rel="noreferrer noopener" title="${url}">${display}</a>`;
 }
 
 function backToInput() {

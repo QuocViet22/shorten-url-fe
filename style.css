@@ -121,19 +121,23 @@ button:hover {
     overflow: hidden;
 }
 
-.history-info .long {
-    font-size: 0.75rem;
-    color: #64748b;
+.history-info .long,
+.history-info .short {
+    display: block;
+    max-width: calc(100vw - 140px);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 200px;
+}
+
+.history-info .long {
+    font-size: 0.75rem;
+    color: #64748b;
 }
 
 .history-info .short {
     color: var(--success);
     font-weight: 600;
-    display: block;
     margin-top: 2px;
 }
 
@@ -154,4 +158,37 @@ button:hover {
     border: 1px dashed var(--success);
     border-radius: 12px;
     margin-bottom: 15px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 100%;
+    max-width: 100%;
+}
+
+.result-view a {
+    color: inherit;
+    text-decoration: none;
+    display: inline-block;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+@media screen and (max-width: 420px) {
+    .container,
+    .history-container {
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .result-view {
+        padding: 14px;
+    }
+
+    button,
+    input[type="url"] {
+        padding: 12px;
+        font-size: 0.95rem;
+    }
 }

@@ -20,7 +20,7 @@ jobs:
         port: 22
         script: |
           cd ..
-          cd shorten-url-app/shorten-url-fe
+          cd /var/www/shorten-url-fe
           git pull origin quality
           git status
           sudo nginx -t

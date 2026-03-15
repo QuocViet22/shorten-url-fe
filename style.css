@@ -77,6 +77,26 @@ button:hover {
     background: var(--primary-hover);
 }
 
+#loader {
+    font-size: 0.95rem;
+    color: #fff;
+    margin-top: 0.75rem;
+}
+
+#loader.hidden {
+    display: none;
+}
+
+#loader:not(.hidden) {
+    animation: pulse 1s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 0.6; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.02); }
+    100% { opacity: 0.6; transform: scale(1); }
+}
+
 /* History List Styles */
 .history-container {
     max-width: 500px;

@@ -2,6 +2,21 @@ const STORAGE_KEY = 'ziplink_cache'; // Load history on page start
 let currentQRCodeLink = '';
 window.onload = renderHistory;
 
+function setLoading(isLoading) {
+    const btn = document.getElementById('shorten-btn');
+    const loader = document.getElementById('loader');
+    if (!btn || !loader) return;
+
+    if (isLoading) {
+        btn.disabled = true;
+        loader.classList.remove('hidden');
+    } else {
+        btn.disabled = false;
+        btn.textContent = 'ShortenURL';
+        loader.classList.add('hidden');
+    }
+}
+
 function handleShorten() {
     let longUrl = document.getElementById('url-input').value.trim();
     if (!longUrl)
@@ -12,40 +27,44 @@ function handleShorten() {
         alert('Please enter a valid URL.');
         return;
     }
-    else {
-        const cache = JSON.parse(sessionStorage.getItem(STORAGE_KEY) || '[]');
-        // 1. Check Cache 
-        const existing = cache.find(item => item.long === longUrl);
-        if (existing) {
-            showResult(existing.short);
-        } else {
-            // 2. Fetch API to shorten URL
-            fetch('https://ziplink.viethq.tech/api/url', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ longUrl })
-            })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    const shortUrl = data.shortUrl; // Assuming the API returns { shortUrl: "..." }
-                    // 3. Save to Cache 
-                    cache.unshift({ long: longUrl, short: shortUrl });
-                    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(cache));
-                    showResult(shortUrl);
-                    renderHistory();
-                })
-                .catch(error => {
-                    alert('Error shortening URL: ' + error.message);
-                });
-        }
+
+    const cache = JSON.parse(sessionStorage.getItem(STORAGE_KEY) || '[]');
+    // 1. Check Cache 
+    const existing = cache.find(item => item.long === longUrl);
+    if (existing) {
+        showResult(existing.short);
+        return;
     }
+
+    // 2. Fetch API to shorten URL
+    setLoading(true);
+    fetch('https://ziplink.viethq.tech/api/url', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ longUrl })
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            const shortUrl = data.shortUrl; // Assuming the API returns { shortUrl: "..." }
+            // 3. Save to Cache 
+            cache.unshift({ long: longUrl, short: shortUrl });
+            sessionStorage.setItem(STORAGE_KEY, JSON.stringify(cache));
+            showResult(shortUrl);
+            renderHistory();
+        })
+        .catch(error => {
+            alert('Error shortening URL: ' + error.message);
+        })
+        .finally(() => {
+            setLoading(false);
+        });
 }
 
 function renderHistory() {

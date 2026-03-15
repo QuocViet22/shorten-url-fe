@@ -28,7 +28,7 @@ function handleShorten() {
         return;
     }
 
-    const cache = JSON.parse(sessionStorage.getItem(STORAGE_KEY) || '[]');
+    const cache = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
     // 1. Check Cache 
     const existing = cache.find(item => item.long === longUrl);
     if (existing) {
@@ -55,7 +55,7 @@ function handleShorten() {
             const shortUrl = data.shortUrl; // Assuming the API returns { shortUrl: "..." }
             // 3. Save to Cache 
             cache.unshift({ long: longUrl, short: shortUrl });
-            sessionStorage.setItem(STORAGE_KEY, JSON.stringify(cache));
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(cache));
             showResult(shortUrl);
             renderHistory();
         })
@@ -68,7 +68,7 @@ function handleShorten() {
 }
 
 function renderHistory() {
-    const cache = JSON.parse(sessionStorage.getItem(STORAGE_KEY) || '[]');
+    const cache = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
     const listElement = document.getElementById('history-list');
     if (cache.length === 0) {
         listElement.innerHTML = '<p style="color: #475569; font-size: 0.8rem;">No recent links yet.</p>';

@@ -1,4 +1,5 @@
 const STORAGE_KEY = 'ziplink_cache'; // Load history on page start 
+let currentQRCodeLink = '';
 window.onload = renderHistory;
 
 function handleShorten() {
@@ -57,13 +58,15 @@ function renderHistory() {
     listElement.innerHTML = cache.map(item => {
         const longDisplay = truncateUrlDisplay(item.long, 100);
         const shortDisplay = truncateUrlDisplay(item.short, 40);
-        return `<div class="history-item">
-        <div class="history-info">
-            <span class="long" title="${item.long}">${longDisplay}</span>
-            <span class="short" title="${item.short}">${shortDisplay}</span>
-        </div>
-        <button class="copy-small" onclick="copyToClipboard('${item.short}')">Copy</button>
-    </div>`;
+        return `
+        <div class="history-item">
+            <div class="history-info">
+                <span class="long" title="${item.long}">${longDisplay}</span>
+                <span class="short" title="${item.short}">${shortDisplay}</span>
+            </div>
+            <button class="copy-small" onclick="copyToClipboard('${item.short}')">Copy</button>
+            <button style="margin-left: 10px;" class="copy-small" onclick="generateQRCode('${item.short}')">QR</button>
+        </div>`;
     }).join('');
 }
 
@@ -81,12 +84,65 @@ function showResult(url) {
     linkEl.innerHTML = `<a href="${url}" target="_blank" rel="noreferrer noopener" title="${url}">${display}</a>`;
 }
 
+function generateQRCode(url) {
+    currentQRCodeLink = url || '';
+    const modal = document.getElementById('qr-modal');
+    const display = document.getElementById('qr-code-display');
+    display.innerHTML = '';
+
+    if (!currentQRCodeLink) {
+        display.innerText = 'Invalid URL';
+        return;
+    }
+
+    new QRCode(display, {
+        text: currentQRCodeLink,
+        width: 180,
+        height: 180,
+        colorDark: '#000000',
+        colorLight: '#ffffff',
+        correctLevel: QRCode.CorrectLevel.H
+    });
+
+    modal.classList.remove('hidden');
+}
+
+function closeQRModal() {
+    const modal = document.getElementById('qr-modal');
+    modal.classList.add('hidden');
+}
+
+function downloadQRCode() {
+    const display = document.getElementById('qr-code-display');
+    const img = display.querySelector('img');
+    const canvas = display.querySelector('canvas');
+
+    let dataUrl;
+    if (img && img.src) {
+        dataUrl = img.src;
+    } else if (canvas) {
+        dataUrl = canvas.toDataURL('image/png');
+    }
+
+    if (!dataUrl) {
+        alert('QR code not ready yet.');
+        return;
+    }
+
+    const anchor = document.createElement('a');
+    anchor.href = dataUrl;
+    anchor.download = `ziplink-qrcode-${Date.now()}.png`;
+    anchor.click();
+}
+
 function backToInput() {
     document.getElementById('main-form').classList.remove('hidden');
     document.getElementById('result-display').classList.add('hidden');
     document.getElementById('url-input').value = '';
 }
+
 function copyToClipboard(text) {
+    if (!text) return;
     navigator.clipboard.writeText(text);
-    alert("Link copied!");
+    alert('Link copied!');
 } 

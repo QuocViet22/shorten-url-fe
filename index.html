@@ -30,6 +30,16 @@
         <span class="history-title">Recent Links</span>
         <div id="history-list"></div>
     </div>
+
+    <div id="qr-modal" class="modal hidden" onclick="if(event.target===this) closeQRModal()">
+        <div class="modal-content">
+            <h2>QR Code</h2>
+            <div id="qr-code-display"></div>
+            <button id="qr-download" onclick="downloadQRCode()">Download PNG</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
     <script src="script.js"></script>
 </body>
 

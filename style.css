@@ -77,6 +77,26 @@ button:hover {
     background: var(--primary-hover);
 }
 
+#loader {
+    font-size: 0.95rem;
+    color: #fff;
+    margin-top: 0.75rem;
+}
+
+#loader.hidden {
+    display: none;
+}
+
+#loader:not(.hidden) {
+    animation: pulse 1s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 0.6; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.02); }
+    100% { opacity: 0.6; transform: scale(1); }
+}
+
 /* History List Styles */
 .history-container {
     max-width: 500px;
@@ -128,6 +148,60 @@ button:hover {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+/* QR Modal */
+.modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(15,23,42,0.84);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+    z-index: 999;
+}
+
+.modal.hidden {
+    display: none;
+}
+
+.modal-content {
+    background: rgba(15,23,42,0.95);
+    border: 1px solid rgba(255,255,255,0.18);
+    border-radius: 16px;
+    width: min(420px, 100%);
+    padding: 1.25rem;
+    position: relative;
+    text-align: center;
+}
+
+.modal-close {
+    position: absolute;
+    top: 0.7rem;
+    right: 0.7rem;
+    border: none;
+    background: transparent;
+    color: #94a3b8;
+    font-size: 1.1rem;
+    cursor: pointer;
+}
+
+#qr-code-display {
+    margin: 1rem auto;
+    width: 180px;
+    height: 180px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px dashed rgba(148,167,184,0.56);
+    border-radius: 12px;
+    background: #fff;
+}
+
+#qr-download {
+    margin-top: 0.8rem;
+    width: 100%;
 }
 
 .history-info .long {

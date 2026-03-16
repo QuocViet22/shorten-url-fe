@@ -127,7 +127,7 @@
                 <span class="long" title="${item.long}">${longDisplay}</span>
                 <span class="short" title="${item.short}">${shortDisplay}</span>
             </div>
-            <div>
+            <div style="display: flex; gap: 5px;">
                 <button class="copy-small" onclick="copyToClipboard('${item.short}')">Copy</button>
                 <button class="copy-small" onclick="generateQRCode('${item.short}')">QR</button>
             </div>
